@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedGifs Downloader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="images/logo.png" alt="RedGifs Downloader">
+        <h1>RedGifs Downloader</h1>
+      </div>
+    </header>
+
+    <main>
+      <div class="status-section">
+        <p class="status-message">Connected to RedGifs Downloader service</p>
+      </div>
+
+      <div class="current-page-section">
+        <h2>Current Page</h2>
+        <div id="current-video" class="current-video">
+          <p class="no-video">No RedGifs video detected on current page</p>
+        </div>
+      </div>
+
+      <div class="url-input-section">
+        <h2>Download by URL</h2>
+        <textarea id="urls-input" placeholder="Enter RedGifs URLs (one per line)"></textarea>
+        <button id="download-btn" class="btn primary">Download</button>
+      </div>
+
+      <div class="results-section">
+        <h2>Results</h2>
+        <div id="results" class="results-list"></div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Powered by <a href="https://redgifsdownloader.net/" target="_blank">RedGifsDownloader.net</a> API</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
