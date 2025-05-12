@@ -85,7 +85,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Credits
 
 - Powered by the [RedGifsDownloader.net](https://redgifsdownloader.net/) API
-- Icons and interface designed by [YourName]
+- Icons and interface designed by RedGifsDownloader.net
 
 ## Disclaimer
 
