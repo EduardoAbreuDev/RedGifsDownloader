@@ -14,12 +14,6 @@ A browser extension that allows you to download videos from RedGifs with a singl
 
 ## Installation
 
-### Chrome Web Store
-
-1. Visit [Chrome Web Store](#) *(Add link when published)*
-2. Click "Add to Chrome"
-3. Confirm the installation
-
 ### Manual Installation (Developer Mode)
 
 1. Download or clone this repository
