@@ -8,6 +8,11 @@
   // Style elements for download buttons
   const style = document.createElement('style');
   style.textContent = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .rg-downloader-button {
       background-color: #fd3164;
       color: white;
@@ -65,43 +70,84 @@
       return url.split('/watch/').pop().split('?')[0].split('#')[0];
     }
 
-    // If it's just the ID
+    // If it's just the ID (New path)
+    // Check if it's a potential ID or a URL that needs cleaning
+    const possibleIdMatch = url.match(/([a-zA-Z0-9]+)(\.jpg)?$/);
+    if (possibleIdMatch && possibleIdMatch[1]) {
+        return possibleIdMatch[1];
+    }
+
     return url;
   }
 
   // Function to get video URL from an element
   function getVideoUrlFromElement(element) {
+    // 1. Tentar encontrar o ID pelo atributo 'data-feed-item-id' no contêiner principal (Novo e mais confiável)
+    const feedItemId = element.getAttribute('data-feed-item-id');
+    if (feedItemId) {
+      console.log(`[RG Downloader] ID encontrado via data-feed-item-id: ${feedItemId}`);
+      return `https://www.redgifs.com/watch/${feedItemId}`;
+    }
+    
+    // 2. Tentar encontrar o ID do vídeo pelo padrão da imagem de Poster (Fallback 1)
+    const imageElement = element.querySelector('.GifPreview-BackdropWrap img, img[alt^="Poster for "], img[src*="media.redgifs.com"]');
+
+    if (imageElement) {
+      // Prioridade A: Tenta extrair o ID do atributo 'alt'
+      const altText = imageElement.getAttribute('alt');
+      if (altText && altText.startsWith('Poster for ')) {
+        const videoId = altText.replace('Poster for ', '');
+        if (videoId) {
+          console.log(`[RG Downloader] ID encontrado via ALT (Fallback 1A): ${videoId}`);
+          return `https://www.redgifs.com/watch/${videoId}`;
+        }
+      }
+
+      // Prioridade B: Tenta extrair o ID do atributo 'src'
+      const srcUrl = imageElement.getAttribute('src');
+      if (srcUrl) {
+        const idMatch = srcUrl.match(/([a-zA-Z0-9]+)(-mobile)?\.jpg$/i);
+        
+        if (idMatch && idMatch[1]) {
+          const videoId = idMatch[1];
+          console.log(`[RG Downloader] ID encontrado via SRC (Fallback 1B): ${videoId}`);
+          return `https://www.redgifs.com/watch/${videoId}`;
+        }
+      }
+    }
+
+    // 3. Lógica antiga (Fallback 2, se tudo mais falhar)
+    
     // Check if it has an id attribute with the gif name
     const gifId = element.id;
     if (gifId && gifId.startsWith('gif_')) {
       const videoId = gifId.replace('gif_', '');
+      console.log(`[RG Downloader] ID encontrado via ID antigo (Fallback 2A): ${videoId}`);
       return `https://www.redgifs.com/watch/${videoId}`;
     }
 
     // Look for a link to the video page
     const linkElement = element.querySelector('a[href*="/watch/"]');
     if (linkElement) {
+      console.log(`[RG Downloader] URL encontrada via Link (Fallback 2B): ${linkElement.href}`);
       return linkElement.href;
     }
 
     // Try to find link in user info area
     const userInfoLink = element.querySelector('.UserInfo-Date[href*="/watch/"]');
     if (userInfoLink) {
-      return userInfoLink.href;
+       console.log(`[RG Downloader] URL encontrada via UserInfo (Fallback 2C): ${userInfoLink.href}`);
+       return userInfoLink.href;
     }
 
     // Check if there's a video or media element with URL
     const videoElement = element.querySelector('video');
     if (videoElement && videoElement.src) {
-      const blobUrl = videoElement.src;
-      // We can't use blob URLs directly
-      // Let's try to find the video ID in other attributes
-
-      // Check the parent element for classes that might contain the ID
       const parent = element.closest('[id]');
       if (parent && parent.id) {
         const idMatch = parent.id.match(/gif_(.+)/);
         if (idMatch && idMatch[1]) {
+          console.log(`[RG Downloader] ID encontrado via Parent ID (Fallback 2D): ${idMatch[1]}`);
           return `https://www.redgifs.com/watch/${idMatch[1]}`;
         }
       }
@@ -166,7 +212,6 @@
     // Update button state
     button.disabled = true;
     button.classList.add('loading');
-    const originalText = button.textContent;
     button.innerHTML = `
       <span class="rg-downloader-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
